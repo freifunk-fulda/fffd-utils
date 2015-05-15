@@ -81,7 +81,7 @@ fi
 #
 cd ${DIR} &>/dev/null
 if [ $? -ne 0 ]; then
-	logger -p local7.err "${NAME}: Repository not found"
+	logger -p local5.err "${NAME}: Repository not found"
 	exit 1
 fi
 
@@ -100,14 +100,14 @@ status=$(($status + $?))
 # catch stupidity errors
 #
 if [ $status -ne 0 ]; then
-	logger -p local7.err "${NAME}: Unable to get commit objects"
+	logger -p local5.err "${NAME}: Unable to get commit objects"
 	exit 1
 fi
 
 # compare commit objects and update if neccessary
 
 if [ ${LOCAL} == ${REMOTE} ]; then
-	logger -p local7.notice "${NAME}: Already up-to-date"
+	logger -p local5.notice "${NAME}: Already up-to-date"
 	exit 0
 
 elif [ ${LOCAL} == ${BASE} ]; then
@@ -117,15 +117,15 @@ elif [ ${LOCAL} == ${BASE} ]; then
 	reloadstatus=$?
 
 	if [ $gitstatus -eq 0 -a $reloadstatus -eq 0 ]; then
-		logger -p local7.notice "${NAME}: Updated successfully"
+		logger -p local5.notice "${NAME}: Updated successfully"
 		exit 0
 	else
-		logger -p local7.err "${NAME}: Error updating from remote repository"
+		logger -p local5.err "${NAME}: Error updating from remote repository"
 		exit 1
 	fi
 
 else
-	logger -p local7.err "${NAME}: Push or manual merge needed"
+	logger -p local5.err "${NAME}: Push or manual merge needed"
 	exit 1
 fi
 
