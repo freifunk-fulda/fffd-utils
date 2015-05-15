@@ -4,6 +4,9 @@
 # update the fffd-utils repo
 0 * * * *	root	/opt/fffd-utils/update-repo.sh -n fffd-utils -d /opt/fffd-utils -c true
 
-# update fffd-dns
+# update the fffd-peers-backbone
+0 * * * *	root	/opt/fffd-utils/update-repo.sh -n fffd-peers-backbone -d /opt/fffd-peers-backbone -c "pkill -HUP fastd"
+
+# update fffd-dns (nur auf dem master!)
 #*/10 * * * *	root	/opt/fffd-utils/update-repo.sh -n fffd-dns -d /opt/fffd-dns -c "service bind9 reload"
 
