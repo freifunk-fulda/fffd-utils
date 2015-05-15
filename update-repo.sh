@@ -113,7 +113,7 @@ if [ ${LOCAL} == ${REMOTE} ]; then
 elif [ ${LOCAL} == ${BASE} ]; then
 	${GIT} pull &>/dev/null
 	gitstatus=$?
-	${CMD}
+	${CMD} &>/dev/null
 	reloadstatus=$?
 
 	if [ $gitstatus -eq 0 -a $reloadstatus -eq 0 ]; then
