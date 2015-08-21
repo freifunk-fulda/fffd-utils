@@ -1,0 +1,1 @@
+*/5 *   * * *   root    /opt/fffd-check-gateway/check_gateway.sh &>/dev/null
