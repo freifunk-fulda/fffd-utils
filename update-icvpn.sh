@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-# updated ICVPN peerings and DNS
+# This script will update ICVPN peerings and DNS delegations.
+# It needs to run by cron.
 #
 
 [ "$(whoami)" != 'root' ] && (
-	echo "can only be executed as root user"
+	logger "update-icvpn: error: please execute as user root"
 	exit 1
 )
 
@@ -14,10 +15,10 @@ ICVPN_META=/opt/icvpn-meta
 ICVPN_SCRIPTS=/opt/icvpn-scripts
 
 BIRD_ROOT=/etc/bird
-BIRD4_ROA=$BIRD_ROOT/bird4-roa-icvpn.conf
-BIRD4_PEERS=$BIRD_ROOT/bird4-peers-icvpn.conf
-BIRD6_ROA=$BIRD_ROOT/bird6-roa-icvpn.conf
-BIRD6_PEERS=$BIRD_ROOT/bird6-peers-icvpn.conf
+BIRD4_ROA=$BIRD_ROOT/icvpn/bird4-roa-icvpn.conf
+BIRD4_PEERS=$BIRD_ROOT/icvpn/bird4-peers-icvpn.conf
+BIRD6_ROA=$BIRD_ROOT/icvpn/bird6-roa-icvpn.conf
+BIRD6_PEERS=$BIRD_ROOT/icvpn/bird6-peers-icvpn.conf
 
 BIND_ROOT=/etc/bind
 BIND_CONFIG=$BIND_ROOT/named.conf.icvpn
@@ -55,7 +56,7 @@ cd /etc/tinc/$TINC_NETWORK/
 git remote update >/dev/null
 
 if [ $FORCE_VPN ] || [ $(git rev-parse HEAD) != $(git rev-parse @{u}) ]; then
-	echo "icvpn: update available"
+	logger "update-icvpn: repo icvpn: update available"
 	git pull origin master
 	# post-merge hook handles configuration update
 fi
@@ -65,11 +66,11 @@ cd $ICVPN_META
 git remote update >/dev/null
 
 if [ $FORCE_META ] || [ $(git rev-parse HEAD) != $(git rev-parse @{u}) ]; then
-	echo "icvpn-meta: update available"
+	logger "update-icvpn: repo icvpn-meta: update available"
 	git pull origin master
 	update_roa
 	update_bgp_peers
-	#update_bgp6_peers
+	update_bgp6_peers
 	update_bind
 fi
 
