@@ -29,13 +29,13 @@ update_roa() (
 )
 
 update_bgp_peers() (
-	$ICVPN_SCRIPTS/mkbgp -4 -f bird -p icvpn_ -s $ICVPN_META -x fulda -d ebgp_icvpn > $BIRD4_PEERS
+	$ICVPN_SCRIPTS/mkbgp -4 -f bird -p icvpn_ -s $ICVPN_META -x fulda -d bgp_icvpn > $BIRD4_PEERS
 	birdc configure check
 	birdc configure
 )
 
 update_bgp6_peers() (
-	$ICVPN_SCRIPTS/mkbgp -6 -f bird -p icvpn_ -s $ICVPN_META -x fulda -d ebgp_icvpn > $BIRD6_PEERS
+	$ICVPN_SCRIPTS/mkbgp -6 -f bird -p icvpn_ -s $ICVPN_META -x fulda -d bgp_icvpn > $BIRD6_PEERS
 	birdc6 configure check
 	birdc6 configure
 )
@@ -46,8 +46,6 @@ update_bind() (
 	rndc reload
 )
 
-
-set -ex
 
 PATH=/usr/sbin:$PATH
 
