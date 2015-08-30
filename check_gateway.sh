@@ -1,8 +1,11 @@
 #!/bin/bash
 
 # check whether the gateway has access to the internet using the VPN-tunnel
-# interface. if so, turn on the BATMAN server mode and start the dhcp server.
-# otherwise, disable server mode and stop the dhcp server.
+# interface. if so, turn on the BATMAN server mode and start services like
+# dhcp server, router advertisement daemon, and so on. otherwise, disable 
+# server mode and stop the services.
+
+source /etc/gateway_enabled
 
 INTERFACE="fffd.internet"
 BANDWIDTH=54MBit/54MBit
@@ -12,7 +15,7 @@ shopt -s nullglob
 # Test whether gateway is connected to the outer world via VPN
 ping -q -I $INTERFACE 8.8.8.8 -c 2 -i 1 -W 5 >/dev/null 2>&1
 
-if test $? -eq 0; then
+if [ ${GATEWAY_ENABLED} -eq 1 -a $? -eq 0 ]; then
     NEW_STATE=server
 else
     NEW_STATE=off
@@ -26,13 +29,16 @@ for MESH in /sys/class/net/*/mesh; do
     
     echo $NEW_STATE > $MESH/gw_mode
     echo $BANDWIDTH > $MESH/gw_bandwidth
-    logger "batman gateway mode changed to $NEW_STATE"
+    logger "check_gateway: batman gateway mode changed to $NEW_STATE"
 
     if [ "$NEW_STATE" == "server" ]; then
         # Restart DHCP server if gateway modus has been activated
-        /usr/sbin/service isc-dhcp-server restart
+        systemctl restart isc-dhcp-server.service
+        systemctl restart radvd.service
+
     else
         # Shutdown DHCP server to prevent renewal of leases
-        /usr/sbin/service isc-dhcp-server stop
+        systemctl stop isc-dhcp-server.service
+        systemctl stop radvd.service
     fi
 done
