@@ -18,7 +18,7 @@ cp ${dst}/tmp/nodes.json ${dst}
 cp ${dst}/tmp/nodelist.json ${dst}
 cp ${dst}/tmp/graph.json ${dst}
 
-if [ "${date}" == "0425" ]; then
+if [ "${time}" == "0420" ]; then
 	find ${dst}/bak/* -mtime +14 -exec rm {} \;
 
 	cp ${dst}/tmp/nodes.json ${dst}/bak/nodes.json-${date}${time}
