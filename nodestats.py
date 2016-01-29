@@ -28,7 +28,7 @@ def write_to_graphite(data, prefix='fffd'):
 def main():
     logging.basicConfig(level=logging.WARN)
 
-    URL = 'http://fulda.meshviewer.net/nodes.json'
+    URL = 'https://meshviewer.fulda.freifunk.net/data/nodes.json'
 
     gateways = []
 
