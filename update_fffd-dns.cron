@@ -1,0 +1,1 @@
+0,30 * * * *	root	/opt/fffd-utils/update-repo.sh -n fffd-dns -d /opt/fffd-dns -c "/usr/sbin/rndc reload"
