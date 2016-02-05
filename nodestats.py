@@ -20,7 +20,7 @@ def get_socket(host, port):
 
 def write_to_graphite(data, prefix='fffd'):
     now = time.time()
-    with get_socket('nms.services.fffd', 2003) as s:
+    with get_socket('nms.services.fffd.eu', 2003) as s:
         for key, value in data.items():
             line = "%s.%s %s %s\n" % (prefix, key, float(value), now)
             s.sendall(line.encode('latin-1'))
