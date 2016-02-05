@@ -8,7 +8,7 @@
 date=$(date +%Y%d%m)
 time=$(date +%H%M)
 
-dst="/var/www/meshviewer.freifunk-fulda.de/build/data"
+dst="/var/www/meshviewer.fulda.freifunk.net/build/data"
 
 cd /opt/ffmap-backend
 
