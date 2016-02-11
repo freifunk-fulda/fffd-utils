@@ -20,7 +20,7 @@ def get_socket(host, port):
 
 def write_to_graphite(data, prefix='fffd'):
     now = time.time()
-    with get_socket('nms.services.fffd.eu', 2003) as s:
+    with get_socket('127.0.0.1', 2003) as s:
         for key, value in data.items():
             line = "%s.%s %s %s\n" % (prefix, key, float(value), now)
             s.sendall(line.encode('latin-1'))
@@ -32,69 +32,77 @@ def main():
 
     gateways = []
 
+    client_count = 0
+
     try:
-        client_count = 0
-
         data = requests.get(URL, timeout=1).json()
-        nodes = data['nodes']
-        known_nodes = len(nodes.keys())
-        online_nodes = 0
-        update = {}
-        gateway_count = 0
-        for node_mac, node in nodes.items():
+    except Exception:
+        raise
+
+    nodes = data['nodes']
+    known_nodes = len(nodes.keys())
+    online_nodes = 0
+    update = {}
+    gateway_count = 0
+    for node_mac, node in nodes.items():
+        try:
+            hostname = node['nodeinfo']['hostname']
+
+            flags = node['flags']
+            if flags['online']:
+                online_nodes += 1
+
+            if flags['gateway']:
+                gateway_count += 1
+                gateways.append(hostname)
+
+            statistics = node['statistics']
+
             try:
-                hostname = node['nodeinfo']['hostname']
+                loadavg = statistics['loadavg']
+                update['%s.loadavg' % hostname] = loadavg
+            except KeyError:
+                pass
 
-                flags = node['flags']
-                if flags['online']:
-                  online_nodes += 1
+            try:
+                uptime = statistics['uptime']
+                update['%s.uptime' % hostname] = uptime
+            except KeyError:
+                pass
 
-                if flags['gateway']:
-                  gateway_count += 1
-                  gateways.append(hostname)
+            try:
+                mem = statistics['memory_usage']
+                update['%s.memory' % hostname] = mem
+            except KeyError:
+                pass
 
-                statistics = node['statistics']
-                try:
-                  loadavg = statistics['loadavg']
-                  update['%s.loadavg' % hostname] = loadavg
-                except KeyError:
-                  pass
-                try:
-                  uptime = statistics['uptime']
-                  update['%s.uptime' % hostname] = uptime
-                except KeyError:
-                  pass
-                try:
-                  mem = statistics['memory_usage']
-                  update['%s.memory' % hostname] = mem
-                except KeyError:
-                  pass
+            try:
+                clients = statistics['clients']
+                client_count += int(clients)
+                update['%s.clients' % hostname] = clients
+            except KeyError:
+                pass
 
-                try:
-                  clients = statistics['clients']
-                  client_count += int(clients)
-                  update['%s.clients' % hostname] = clients
-                except KeyError:
-                  pass
+            try:
+                traffic = statistics['traffic']
+                for key in ['tx', 'rx', 'mgmt_tx', 'mgmt_rx', 'forward']:
+                    update['%s.traffic.%s.packets' % (hostname, key)] = traffic[key]['packets']
+                    update['%s.traffic.%s.bytes' % (hostname, key)] = traffic[key]['bytes']
+            except KeyError:
+                pass
 
-                try:
-                  traffic = statistics['traffic']
-                  for key in ['tx', 'rx', 'mgmt_tx', 'mgmt_rx', 'forward']:
-                      update['%s.traffic.%s.packets' % (hostname, key)] = traffic[key]['packets']
-                      update['%s.traffic.%s.bytes' % (hostname, key)] = traffic[key]['bytes']
-                except KeyError:
-                  pass
-            except KeyError as e:
-                print(time.time())
-                print('error while reading ', node_mac)
+        except KeyError as e:
+            pass
 
-        update['clients'] = client_count
-        update['known_nodes'] = known_nodes
-        update['online_nodes'] = online_nodes
-        update['gateways'] = gateway_count
+    update['clients'] = client_count
+    update['known_nodes'] = known_nodes
+    update['online_nodes'] = online_nodes
+    update['gateways'] = gateway_count
+    try:
         write_to_graphite(update)
-    except Exception as e:
-        print(e)
+    except Exception:
+        raise
+
 
 if __name__ == "__main__":
     main()
