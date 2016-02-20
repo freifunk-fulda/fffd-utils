@@ -5,18 +5,18 @@
 
 case `/bin/readlink /etc/openvpn/openvpn.conf` in
 	*amsterdam*)
-		return 1
+		exit 1
 		;;
 	*erfurt*)
-		return 2
+		exit 2
 		;;
 	*frankfurt*)
-		return 3
+		exit 3
 		;;
 	*nuremberg*)
-		return 4
+		exit 4
 		;;
 esac
 
-return -1
+exit -1
 
