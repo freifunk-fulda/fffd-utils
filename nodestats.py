@@ -37,7 +37,7 @@ def main():
     try:
         data = requests.get(URL, timeout=1).json()
     except Exception:
-        raise
+        return
 
     nodes = data['nodes']
     known_nodes = len(nodes.keys())
