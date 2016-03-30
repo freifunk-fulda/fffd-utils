@@ -12,7 +12,7 @@ shopt -s nullglob
 # vpn interface and advertised bandwidth
 #
 INTERFACE="fffd.internet"
-BANDWIDTH=54MBit/54MBit
+BANDWIDTH=100MBit/100MBit
 
 
 # it is possible to manually enable or disable this gateway by using the 
