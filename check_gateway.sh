@@ -26,7 +26,7 @@ if [ ${GATEWAY_ENABLED} -ne 1 ]; then
 		if [ "$(cat $MESH/gw_mode)" != "off" ]; then
 			logger "check_gateway: manually disabling gateway mode"
 
-			echo $NEW_STATE > $MESH/gw_mode
+			echo "off" > $MESH/gw_mode
 			echo $BANDWIDTH > $MESH/gw_bandwidth
 
 			systemctl stop isc-dhcp-server.service
