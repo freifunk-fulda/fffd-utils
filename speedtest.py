@@ -63,7 +63,7 @@ def main(argv):
 
     params = parseargs(argv)
 
-    result = subprocess.check_output(["/usr/local/bin/speedtest-cli", "--source", params[0], "--simple", "--secure"])
+    result = subprocess.check_output(["/usr/local/bin/speedtest-cli", "--source", params[0], "--simple"])
 
     lines = result.splitlines()
 
